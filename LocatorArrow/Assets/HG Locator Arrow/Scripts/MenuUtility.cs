@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public static class MenuUtility
 {
-	public static Color AverageColorFromTexture(Texture2D tex)
+	public static Color AverageColor(this Texture2D tex)
 	{
 		Color[] texColors = tex.GetPixels();
 
@@ -46,80 +44,53 @@ public static class MenuUtility
 		return new Color(r / runningTotal, g / runningTotal, b / runningTotal, 1);
 	}
 
-	public static void LerpFromTransparent<T>(T element, float duration, float delay)
-	{
-		Color originalColor;
+	#region Refactored
 
-		if (element is Image)
-		{
-			Image image = element as Image;
-			originalColor = new Color(image.color.r, image.color.g, image.color.b, image.color.a);
-			image.color = new Color(image.color.r, image.color.g, image.color.b, 0f);
-			LeanTween.color(image.GetComponent<RectTransform>(), originalColor, duration).setEase(LeanTweenType.easeInOutSine).setDelay(delay);
-		}
-		else if (element is RawImage)
-		{
-			RawImage image = element as RawImage;
-			originalColor = new Color(image.color.r, image.color.g, image.color.b, image.color.a);
-			image.color = new Color(image.color.r, image.color.g, image.color.b, 0f);
-			LeanTween.color(image.GetComponent<RectTransform>(), originalColor, duration).setEase(LeanTweenType.easeInOutSine).setDelay(delay);
-		}
-		else if (element is Text)
-		{
-			Text image = element as Text;
-			originalColor = new Color(image.color.r, image.color.g, image.color.b, image.color.a);
-			image.color = new Color(image.color.r, image.color.g, image.color.b, 0f);
-			LeanTween.colorText(image.GetComponent<RectTransform>(), originalColor, duration).setEase(LeanTweenType.easeInOutSine).setDelay(delay);
-		}
+	// Simplified method
+	[Obsolete("LerpFromTransparent is deprecated, please use LerpVisibility instead")]
+	public static void LerpFromTransparent<T>(T element, float duration, float delay) where T : Graphic
+	{
+		element.LerpVisibility(true, duration, delay);
 	}
 
-	public static void LerpToTransparent<T>(T element, float duration, float delay, bool destroy = false)
+	// Simplified method
+	[Obsolete("LerpToTransparent is deprecated, please use LerpVisibility instead")]
+	public static void LerpToTransparent<T>(T element, float duration, float delay, bool destroy = false) where T : Graphic
 	{
-		Color newColor;
-
-		if (element is Image)
-		{
-			Image image = element as Image;
-			newColor = new Color(image.color.r, image.color.g, image.color.b, 0f);
-			LeanTween.color(image.GetComponent<RectTransform>(), newColor, duration).setEase(LeanTweenType.easeInOutSine).setDelay(delay).setDestroyOnComplete(destroy);
-		}
-		else if (element is RawImage)
-		{
-			RawImage image = element as RawImage;
-			newColor = new Color(image.color.r, image.color.g, image.color.b, 0f);
-			LeanTween.color(image.GetComponent<RectTransform>(), newColor, duration).setEase(LeanTweenType.easeInOutSine).setDelay(delay).setDestroyOnComplete(destroy);
-		}
-		else if (element is Text)
-		{
-			Text image = element as Text;
-			newColor = new Color(image.color.r, image.color.g, image.color.b, 0f);
-			LeanTween.colorText(image.GetComponent<RectTransform>(), newColor, duration).setEase(LeanTweenType.easeInOutSine).setDelay(delay).setDestroyOnComplete(destroy);
-		}
+		element.LerpVisibility(false, duration, delay, destroy);
 	}
 
-	public static void LerpInFillAmount<T>(T element, float duration, float delay)
+	// Extracted method
+	public static void LerpVisibility<T>(this T element, bool visible, float duration = 0.5f, float delay = 0f, bool destroyOnComplete = false) where T : Graphic
 	{
-		if (element is Image)
-		{
-			Image image = element as Image;
+		element.color = new Color(element.color.r, element.color.g, element.color.b, visible ? 0f : 1f);
 
-			LeanTween.value(image.gameObject, 0, 1, duration).setOnUpdate((float val) =>
-			{
-				image.fillAmount = val;
-			}).setEase(LeanTweenType.easeInOutSine).setDelay(delay);
-		}
+		LeanTween.color(element.GetComponent<RectTransform>(),
+			new Color(element.color.r, element.color.g, element.color.b, visible ? 1f : 0f), duration).setEase(LeanTweenType.easeInOutSine).setDelay(delay).setDestroyOnComplete(destroyOnComplete);
 	}
 
-	public static void LerpOutFillAmount<T>(T element, float duration, float delay)
+	// Simplified method
+	[Obsolete("LerpInFillAmount is deprecated, please use LerpFillVisibility instead")]
+	public static void LerpInFillAmount<T>(T element, float duration, float delay) where T : Image
 	{
-		if (element is Image)
-		{
-			Image image = element as Image;
-
-			LeanTween.value(image.gameObject, 1, 0, duration).setOnUpdate((float val) =>
-			{
-				image.fillAmount = val;
-			}).setEase(LeanTweenType.easeInOutSine).setDelay(delay);
-		}
+		element.LerpFillVisibility(true, duration, delay);
 	}
+
+	// Simplified method
+	[Obsolete("LerpOutFillAmount is deprecated, please use LerpFillVisibility instead")]
+	public static void LerpOutFillAmount<T>(T element, float duration, float delay) where T : Image
+	{
+		element.LerpFillVisibility(false, duration, delay);
+	}
+
+	// Extracted method
+	public static void LerpFillVisibility<T>(this T element, bool visible, float duration = 0.5f, float delay = 0f) where T : Image
+	{
+		LeanTween.value(element.gameObject, visible ? 0f : 1f, visible ? 1f : 0f, duration).setOnUpdate((float val) =>
+		{
+			element.fillAmount = val;
+		}).setEase(LeanTweenType.easeInOutSine).setDelay(delay);
+	}
+
+	#endregion
 }

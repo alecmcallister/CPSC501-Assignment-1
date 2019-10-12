@@ -36,7 +36,7 @@ public class LocatorArrow : MonoBehaviour
 
 		Texture2D texture = ModelPhotoBooth.Instance.ModelTexture(model);
 		Thumbnail.texture = texture;
-		Border.color = MenuUtility.AverageColorFromTexture(texture);
+		Border.color = texture.AverageColor();
 
 		MenuUtility.LerpFromTransparent(Background, 0.5f, 0f);
 		MenuUtility.LerpFromTransparent(Thumbnail, 0.5f, 0.2f);

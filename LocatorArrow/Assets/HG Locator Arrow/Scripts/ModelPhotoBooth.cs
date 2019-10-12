@@ -93,7 +93,7 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 		Texture2D tex2 = new Texture2D(2, 2);
 		tex2.LoadImage(bytes);
 		ModelTextures[id] = tex2;
-		ModelColors[id] = MenuUtility.AverageColorFromTexture(tex2);
+		ModelColors[id] = tex2.AverageColor();
 
 		RenderTexture.active = currentActiveRT;
 		renderTexture.Release();
