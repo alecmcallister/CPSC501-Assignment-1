@@ -43,6 +43,8 @@ public static class MenuUtility
 			}
 		}
 
+		runningTotal = Mathf.Max(1, runningTotal);
+
 		return new Color(r / runningTotal, g / runningTotal, b / runningTotal, 1);
 	}
 

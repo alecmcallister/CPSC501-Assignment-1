@@ -24,7 +24,7 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 	#region Refactored
 
 	// Simplified method
-	IEnumerator AssignThumbnail(LocatableItem item)
+	public IEnumerator AssignThumbnail(LocatableItem item)
 	{
 		if (!item)
 			yield break;
@@ -61,7 +61,7 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 	}
 
 	// Extracted method
-	GameObject CreateCopyOfGameObject(GameObject copyFrom)
+	public GameObject CreateCopyOfGameObject(GameObject copyFrom)
 	{
 		GameObject copy = new GameObject("Item");
 
@@ -72,7 +72,7 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 	}
 
 	// Extracted method
-	void PositionCopyOnStage(GameObject copy)
+	public void PositionCopyOnStage(GameObject copy)
 	{
 		MeshRenderer meshRenderer = copy.GetComponent<MeshRenderer>();
 
@@ -86,7 +86,7 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 	}
 
 	// Extracted method
-	byte[] GetTextureBytes(RenderTexture renderTexture)
+	public byte[] GetTextureBytes(RenderTexture renderTexture)
 	{
 		Texture2D tex = new Texture2D(renderTexture.width, renderTexture.height);
 		tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
