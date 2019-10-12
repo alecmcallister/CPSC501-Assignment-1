@@ -42,9 +42,11 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 		return (id > -1) ? ModelColors[id] : Color.black;
 	}
 
+	
+	// Simplified method
 	IEnumerator AssignThumbnail(LocatableItem item)
 	{
-		if (item == null)
+		if (!item)
 			yield break;
 
 		while (busy)
@@ -52,51 +54,66 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 
 		busy = true;
 
-		string name = item.name;
-		int id = item.Object_ID;
-
 		Stage stage = Instantiate(StagePrefab).GetComponent<Stage>();
 		RenderTexture renderTexture = stage.GetThumbnailRenderTexture();
-		//stage.AssignTexture(out renderTexture);
 
-		GameObject temp = new GameObject("Item");
-		MeshFilter meshFilter = temp.AddComponent<MeshFilter>();
-		MeshRenderer meshRenderer = temp.AddComponent<MeshRenderer>();
+		GameObject copy = CreateCopyOfGameObject(item.gameObject);
 
-		meshFilter.mesh = item.GetComponent<MeshFilter>().mesh;
-		meshRenderer.materials = item.GetComponent<MeshRenderer>().materials;
+		PositionCopyOnStage(copy);
+
+		renderTexture.Create();
+
+		yield return new WaitForEndOfFrame();
+
+		RenderTexture.active = renderTexture;
+
+		Texture2D tex = new Texture2D(2, 2);
+		tex.LoadImage(GetTextureBytes(renderTexture));
+		ModelTextures[item.Object_ID] = tex;
+		ModelColors[item.Object_ID] = tex.AverageColor();
+
+		renderTexture.Release();
+
+		Destroy(stage.gameObject);
+		Destroy(copy);
+
+		busy = false;
+	}
+
+	#region Refactored
+
+	// Extracted method
+	GameObject CreateCopyOfGameObject(GameObject copyFrom)
+	{
+		GameObject copy = new GameObject("Item");
+
+		copy.AddComponent<MeshFilter>().mesh = copyFrom.GetComponent<MeshFilter>().mesh;
+		copy.AddComponent<MeshRenderer>().materials = copyFrom.GetComponent<MeshRenderer>().materials;
+
+		return copy;
+	}
+
+	// Extracted method
+	void PositionCopyOnStage(GameObject copy)
+	{
+		MeshRenderer meshRenderer = copy.GetComponent<MeshRenderer>();
 
 		float max = Mathf.Max(meshRenderer.bounds.extents.x, meshRenderer.bounds.extents.y, meshRenderer.bounds.extents.z);
 
 		if (max < 0.5f)
-		{
-			float ratio = 0.5f / max;
-			temp.transform.localScale *= ratio;
-		}
+			copy.transform.localScale *= (0.5f / max);
 
-		temp.layer = stage.gameObject.layer;
-		temp.transform.position = Vector3.zero;
+		copy.transform.position = Vector3.zero;
+		copy.layer = 8;
+	}
 
-		renderTexture.Create();
-		yield return new WaitForEndOfFrame();
-		RenderTexture currentActiveRT = RenderTexture.active;
-		RenderTexture.active = renderTexture;
-
+	// Extracted method
+	byte[] GetTextureBytes(RenderTexture renderTexture)
+	{
 		Texture2D tex = new Texture2D(renderTexture.width, renderTexture.height);
 		tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
-		var bytes = tex.EncodeToPNG();
-
-		Texture2D tex2 = new Texture2D(2, 2);
-		tex2.LoadImage(bytes);
-		ModelTextures[id] = tex2;
-		ModelColors[id] = tex2.AverageColor();
-
-		RenderTexture.active = currentActiveRT;
-		renderTexture.Release();
-
-		Destroy(stage.gameObject);
-		Destroy(temp);
-
-		busy = false;
+		return tex.EncodeToPNG();
 	}
+
+	#endregion
 }

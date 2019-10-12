@@ -2,6 +2,8 @@
 
 public class Stage : MonoBehaviour
 {
+	#region Refactored
+
 	Camera _thumbnailCamera;
 	public Camera ThumbnailCamera
 	{
@@ -12,4 +14,6 @@ public class Stage : MonoBehaviour
 	{
 		return ThumbnailCamera.targetTexture;
 	}
+
+	#endregion
 }

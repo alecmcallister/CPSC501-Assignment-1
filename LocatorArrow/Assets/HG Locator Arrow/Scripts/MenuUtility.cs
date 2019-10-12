@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public static class MenuUtility
 {
+	#region Refactored
+
 	public static Color AverageColor(this Texture2D tex)
 	{
 		Color[] texColors = tex.GetPixels();
@@ -43,8 +45,6 @@ public static class MenuUtility
 
 		return new Color(r / runningTotal, g / runningTotal, b / runningTotal, 1);
 	}
-
-	#region Refactored
 
 	// Simplified method
 	[Obsolete("LerpFromTransparent is deprecated, please use LerpVisibility instead")]
