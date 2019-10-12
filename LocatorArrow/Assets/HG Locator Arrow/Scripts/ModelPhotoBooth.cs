@@ -13,23 +13,20 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 
 	void Awake()
 	{
-		LocatableItem.ItemEvent += ItemEvent;
+		LocatableItem.ItemAddedEvent += ItemAddedEvent;
 
 		StagePrefab = Resources.Load<GameObject>("PictureStage");
 	}
 
-	public void ItemEvent(ModelEventArgs e)
+	public void ItemAddedEvent(LocatableItem item)
 	{
-		if (e.EventType == ModelEventArgs.Type.Instantiated)
-		{
-			int id = e.Object_ID;
+		int id = item.Object_ID;
 
-			if (!ModelColors.ContainsKey(id))
-			{
-				ModelColors.Add(id, Color.black);
-				ModelTextures.Add(id, null);
-				StartCoroutine(AssignThumbnail(e));
-			}
+		if (!ModelColors.ContainsKey(id))
+		{
+			ModelColors.Add(id, Color.black);
+			ModelTextures.Add(id, null);
+			StartCoroutine(AssignThumbnail(item));
 		}
 	}
 
@@ -45,9 +42,9 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 		return (id > -1) ? ModelColors[id] : Color.black;
 	}
 
-	IEnumerator AssignThumbnail(ModelEventArgs e)
+	IEnumerator AssignThumbnail(LocatableItem item)
 	{
-		if (e == null)
+		if (item == null)
 			yield break;
 
 		while (busy)
@@ -55,13 +52,12 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 
 		busy = true;
 
-		string name = e.Name;
-		int id = e.Object_ID;
-		GameObject item = e.Object_Data;
+		string name = item.name;
+		int id = item.Object_ID;
 
-		RenderTexture renderTexture;
 		Stage stage = Instantiate(StagePrefab).GetComponent<Stage>();
-		stage.AssignTexture(out renderTexture);
+		RenderTexture renderTexture = stage.GetThumbnailRenderTexture();
+		//stage.AssignTexture(out renderTexture);
 
 		GameObject temp = new GameObject("Item");
 		MeshFilter meshFilter = temp.AddComponent<MeshFilter>();

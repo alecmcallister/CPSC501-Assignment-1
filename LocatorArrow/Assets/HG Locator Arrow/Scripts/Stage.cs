@@ -2,15 +2,14 @@
 
 public class Stage : MonoBehaviour
 {
-	public Camera thumbCamera { get; private set; }
-
-	void Awake()
+	Camera _thumbnailCamera;
+	public Camera ThumbnailCamera
 	{
-		thumbCamera = GetComponentInChildren<Camera>();
+		get => _thumbnailCamera ?? (_thumbnailCamera = GetComponentInChildren<Camera>());
 	}
 
-	public void AssignTexture(out RenderTexture renderTexture)
+	public RenderTexture GetThumbnailRenderTexture()
 	{
-		renderTexture = thumbCamera.targetTexture;
+		return ThumbnailCamera.targetTexture;
 	}
 }

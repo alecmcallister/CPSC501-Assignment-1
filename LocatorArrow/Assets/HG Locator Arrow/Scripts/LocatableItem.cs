@@ -5,11 +5,11 @@ using UnityEngine;
 public class LocatableItem : MonoBehaviour
 {
 	public static Dictionary<int, List<GameObject>> ObjectInstances = new Dictionary<int, List<GameObject>>();
-	public static event Action<ModelEventArgs> ItemEvent = new Action<ModelEventArgs>(e => { });
+	public static event Action<LocatableItem> ItemAddedEvent = new Action<LocatableItem>(e => { });
 
 	public int Object_ID;
 
-	public LocatorArrow ArrowPrefab;
+	public LocatorArrow ArrowPrefab; // BAD. USE A MANAGER.
 
 	void Start()
 	{
@@ -19,7 +19,7 @@ public class LocatableItem : MonoBehaviour
 		else
 			ObjectInstances[Object_ID].Add(gameObject);
 
-		ItemEvent.Invoke(new ModelEventArgs { Name = name, Object_ID = Object_ID, Object_Data = gameObject, EventType = ModelEventArgs.Type.Instantiated });
+		ItemAddedEvent.Invoke(this);
 	}
 
 	void Update()
@@ -35,7 +35,6 @@ public class LocatableItem : MonoBehaviour
 	void OnDestroy()
 	{
 		ObjectInstances.Remove(Object_ID);
-		ItemEvent.Invoke(new ModelEventArgs { Name = name, Object_ID = Object_ID, Object_Data = gameObject, EventType = ModelEventArgs.Type.Deleted });
 	}
 
 	public static int GetItemID(GameObject item)
