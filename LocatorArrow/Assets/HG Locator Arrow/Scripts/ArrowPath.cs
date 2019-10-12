@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LocatorPath : MonoBehaviour
+public class ArrowPath : MonoBehaviour
 {
 	public GameObject ParticlePrefab;
 

@@ -53,7 +53,7 @@ public class LocatorArrow : MonoBehaviour
 	{
 		GameObject arrow = Instantiate(ArrowPrefab);
 		arrow.transform.SetParent(ArrowPanel.transform, false);
-		arrow.GetComponent<Arrow>().Init(focused, LocatorArrowDuration);
+		arrow.GetComponent<ArrowDirectionIndicator>().Init(focused, LocatorArrowDuration);
 	}
 
 	public IEnumerator End()

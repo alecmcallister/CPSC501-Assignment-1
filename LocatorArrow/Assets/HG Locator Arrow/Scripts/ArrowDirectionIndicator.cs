@@ -2,11 +2,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Arrow : MonoBehaviour
+public class ArrowDirectionIndicator : MonoBehaviour
 {
 	Image ArrowColor;
 	Image ArrowBase;
-	LocatorPath Path;
+	ArrowPath Path;
 
 	GameObject Focused;
 
@@ -16,7 +16,7 @@ public class Arrow : MonoBehaviour
 	{
 		ArrowColor = transform.Find("ArrowColor").GetComponent<Image>();
 		ArrowBase = transform.Find("ArrowBase").GetComponent<Image>();
-		Path = transform.Find("ArrowPath").GetComponent<LocatorPath>();
+		Path = transform.Find("ArrowPath").GetComponent<ArrowPath>();
 	}
 
 	void Update()

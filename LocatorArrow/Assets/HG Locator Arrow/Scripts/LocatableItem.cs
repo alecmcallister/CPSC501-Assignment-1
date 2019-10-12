@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Item : MonoBehaviour
+public class LocatableItem : MonoBehaviour
 {
 	public static Dictionary<int, List<GameObject>> ObjectInstances = new Dictionary<int, List<GameObject>>();
 	public static event Action<ModelEventArgs> ItemEvent = new Action<ModelEventArgs>(e => { });

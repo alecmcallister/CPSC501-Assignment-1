@@ -13,7 +13,7 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 
 	void Awake()
 	{
-		Item.ItemEvent += ItemEvent;
+		LocatableItem.ItemEvent += ItemEvent;
 
 		StagePrefab = Resources.Load<GameObject>("PictureStage");
 	}
@@ -35,13 +35,13 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 
 	public Texture2D ModelTexture(GameObject item)
 	{
-		int id = Item.GetItemID(item);
+		int id = LocatableItem.GetItemID(item);
 		return (id > -1) ? ModelTextures[id] : null;
 	}
 
 	public Color ModelColor(GameObject item)
 	{
-		int id = Item.GetItemID(item);
+		int id = LocatableItem.GetItemID(item);
 		return (id > -1) ? ModelColors[id] : Color.black;
 	}
 
