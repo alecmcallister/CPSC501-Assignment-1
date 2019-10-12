@@ -8,9 +8,7 @@ public class ArrowDirectionIndicator : MonoBehaviour
 	Image ArrowBase;
 	ArrowPath Path;
 
-	GameObject Focused;
-
-	float lerpSpeed = 5f;
+	LocatableItem Target;
 
 	void Awake()
 	{
@@ -21,10 +19,15 @@ public class ArrowDirectionIndicator : MonoBehaviour
 
 	void Update()
 	{
-		if (Focused == null)
+		if (Target == null)
 			return;
 
-		Vector3 toFocusedFromArrow = (Focused.transform.position - transform.position).normalized;
+		UpdateRotation();
+	}
+
+	void UpdateRotation()
+	{
+		Vector3 toFocusedFromArrow = (Target.transform.position - transform.position).normalized;
 		Vector3 flatVector = Vector3.ProjectOnPlane(toFocusedFromArrow, transform.parent.forward).normalized;
 		Vector3 cross = Vector3.Cross(transform.up, flatVector).normalized;
 
@@ -36,21 +39,21 @@ public class ArrowDirectionIndicator : MonoBehaviour
 
 		Quaternion originalRot = transform.rotation;
 		Quaternion newRotation = originalRot * Quaternion.AngleAxis(angle, Vector3.forward);
-		transform.rotation = Quaternion.Lerp(originalRot, newRotation, Time.smoothDeltaTime * lerpSpeed);
+		transform.rotation = Quaternion.Lerp(originalRot, newRotation, Time.smoothDeltaTime * 5f);
 	}
 
-	public void Init(GameObject focused, float duration)
+	public void Init(LocatableItem target, float duration = 15f)
 	{
-		Focused = focused;
+		Target = target;
 
-		ArrowColor.color = ModelPhotoBooth.Instance.ModelColor(focused);
+		ArrowColor.color = target.Color;
 
 		MenuUtility.LerpFromTransparent(ArrowBase, 1/4f, 0f);
 		MenuUtility.LerpFromTransparent(ArrowColor, 1/2f, 0.3f);
 
 		MenuUtility.LerpInFillAmount(ArrowColor, 1/2f, 0f);
 
-		Path.Init(Focused, duration, 0.4f);
+		Path.Init(Target, duration, 0.4f);
 
 		StartCoroutine(End(duration));
 	}

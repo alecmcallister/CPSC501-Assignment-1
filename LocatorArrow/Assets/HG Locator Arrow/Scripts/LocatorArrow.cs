@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class LocatorArrow : MonoBehaviour
 {
-	public GameObject ArrowPrefab;
+	GameObject DirectionPrefab;
 	GameObject ArrowPanel;
 
 	RawImage Thumbnail;
@@ -12,7 +12,8 @@ public class LocatorArrow : MonoBehaviour
 	Image OuterBorder;
 	Image Background;
 
-	public GameObject Model { get; private set; }
+	public LocatableItem Target { get; private set; }
+	const float LocatorArrowDuration = 15f;
 
 	void Awake()
 	{
@@ -21,6 +22,8 @@ public class LocatorArrow : MonoBehaviour
 		OuterBorder = transform.Find("LocatorPanel/OuterBorder").GetComponent<Image>();
 		Background = transform.Find("LocatorPanel/Background").GetComponent<Image>();
 		ArrowPanel = transform.Find("ArrowPanel").gameObject;
+
+		DirectionPrefab = Resources.Load<GameObject>("ArrowDirectionIndicator");
 	}
 
 	void Update()
@@ -28,15 +31,14 @@ public class LocatorArrow : MonoBehaviour
 		transform.LookAt(Camera.main.transform);
 	}
 
-	public void Init(GameObject model, Vector3 offset)
+	public void Init(LocatableItem target, Vector3 offset)
 	{
-		Model = model;
+		Target = target;
 
 		transform.position += offset;
 
-		Texture2D texture = ModelPhotoBooth.Instance.ModelTexture(model);
-		Thumbnail.texture = texture;
-		Border.color = texture.AverageColor();
+		Thumbnail.texture = target.Thumbnail;
+		Border.color = target.Color;
 
 		MenuUtility.LerpFromTransparent(Background, 0.5f, 0f);
 		MenuUtility.LerpFromTransparent(Thumbnail, 0.5f, 0.2f);
@@ -45,15 +47,15 @@ public class LocatorArrow : MonoBehaviour
 		MenuUtility.LerpOutFillAmount(OuterBorder, 0.333f, 0.2f);
 
 		StartCoroutine(End());
+
+		AddDirectionIndicator(target);
 	}
 
-	float LocatorArrowDuration = 15f;
-
-	public void AddArrow(GameObject focused)
+	public void AddDirectionIndicator(LocatableItem target)
 	{
-		GameObject arrow = Instantiate(ArrowPrefab);
-		arrow.transform.SetParent(ArrowPanel.transform, false);
-		arrow.GetComponent<ArrowDirectionIndicator>().Init(focused, LocatorArrowDuration);
+		GameObject direction = Instantiate(DirectionPrefab);
+		direction.transform.SetParent(ArrowPanel.transform, false);
+		direction.GetComponent<ArrowDirectionIndicator>().Init(target, LocatorArrowDuration);
 	}
 
 	public IEnumerator End()

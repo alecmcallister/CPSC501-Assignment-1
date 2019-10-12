@@ -2,11 +2,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+// Not going to attempt to refactor this...
 public class ArrowPath : MonoBehaviour
 {
 	public GameObject ParticlePrefab;
 
-	GameObject Focused;
+	LocatableItem Target;
 
 	Vector3[] pointList;
 	int steps = 10;
@@ -27,19 +28,19 @@ public class ArrowPath : MonoBehaviour
 		}
 	}
 
-	public void Init(GameObject target, float duration, float delay)
+	public void Init(LocatableItem target, float duration, float delay)
 	{
-		Focused = target;
+		Target = target;
 
-		CreatePathToObject(Focused, duration, delay);
+		CreatePathToObject(Target.gameObject, duration, delay);
 	}
 
 	void Update()
 	{
-		if (Focused != null)
+		if (Target != null)
 		{
 			UpdateBezierPathStart(transform.position, transform.up);
-			UpdateBezierPathEnd(Focused.transform.position);
+			UpdateBezierPathEnd(Target.transform.position);
 		}
 	}
 
@@ -77,7 +78,7 @@ public class ArrowPath : MonoBehaviour
 
 	IEnumerator ParticlePath(float duration, float delay)
 	{
-		Color c = ModelPhotoBooth.Instance.ModelColor(Focused);
+		Color c = Target.Color;
 		Color originalColor = new Color(c.r, c.g, c.b, c.a);
 		Color originalNoAlpha = new Color(c.r, c.g, c.b, 0f);
 		Vector3 originalScale = Vector3.one * 0.5f * 0.25f;

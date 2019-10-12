@@ -4,21 +4,33 @@ using UnityEngine;
 
 public class LocatableItem : MonoBehaviour
 {
-	public static Dictionary<int, List<GameObject>> ObjectInstances = new Dictionary<int, List<GameObject>>();
 	public static event Action<LocatableItem> ItemAddedEvent = new Action<LocatableItem>(e => { });
 
-	public int Object_ID;
+	static int itemCount = 0;
+	public int Object_ID { get; private set; }
 
 	public LocatorArrow ArrowPrefab; // BAD. USE A MANAGER.
 
+	Texture2D _thumbnail;
+	public Texture2D Thumbnail
+	{
+		get => _thumbnail;
+		set
+		{
+			_thumbnail = value;
+			Color = value?.AverageColor() ?? Color.grey;
+		}
+	}
+
+	public Color Color { get; private set; }
+
+	void Awake()
+	{
+		Object_ID = itemCount++;
+	}
+
 	void Start()
 	{
-		if (!ObjectInstances.ContainsKey(Object_ID))
-			ObjectInstances.Add(Object_ID, new List<GameObject> { gameObject });
-
-		else
-			ObjectInstances[Object_ID].Add(gameObject);
-
 		ItemAddedEvent.Invoke(this);
 	}
 
@@ -27,22 +39,7 @@ public class LocatableItem : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
 			LocatorArrow arrow = Instantiate(ArrowPrefab).GetComponent<LocatorArrow>();
-			arrow.Init(gameObject, Camera.main.transform.right * 0.2f * Object_ID);
-			arrow.AddArrow(gameObject);
+			arrow.Init(this, Camera.main.transform.right * 0.2f * Object_ID);
 		}
-	}
-
-	void OnDestroy()
-	{
-		ObjectInstances.Remove(Object_ID);
-	}
-
-	public static int GetItemID(GameObject item)
-	{
-		foreach (int id in ObjectInstances.Keys)
-			if (ObjectInstances[id]?.Contains(item) ?? false)
-				return id;
-
-		return -1;
 	}
 }

@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 {
-	public Dictionary<int, Color> ModelColors = new Dictionary<int, Color>();
-	public Dictionary<int, Texture2D> ModelTextures = new Dictionary<int, Texture2D>();
 	static bool busy = false;
 
 	GameObject StagePrefab;
@@ -20,29 +18,11 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 
 	public void ItemAddedEvent(LocatableItem item)
 	{
-		int id = item.Object_ID;
-
-		if (!ModelColors.ContainsKey(id))
-		{
-			ModelColors.Add(id, Color.black);
-			ModelTextures.Add(id, null);
-			StartCoroutine(AssignThumbnail(item));
-		}
+		StartCoroutine(AssignThumbnail(item));
 	}
 
-	public Texture2D ModelTexture(GameObject item)
-	{
-		int id = LocatableItem.GetItemID(item);
-		return (id > -1) ? ModelTextures[id] : null;
-	}
+	#region Refactored
 
-	public Color ModelColor(GameObject item)
-	{
-		int id = LocatableItem.GetItemID(item);
-		return (id > -1) ? ModelColors[id] : Color.black;
-	}
-
-	
 	// Simplified method
 	IEnumerator AssignThumbnail(LocatableItem item)
 	{
@@ -69,8 +49,8 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 
 		Texture2D tex = new Texture2D(2, 2);
 		tex.LoadImage(GetTextureBytes(renderTexture));
-		ModelTextures[item.Object_ID] = tex;
-		ModelColors[item.Object_ID] = tex.AverageColor();
+
+		item.Thumbnail = tex;
 
 		renderTexture.Release();
 
@@ -79,8 +59,6 @@ public class ModelPhotoBooth : Singleton<ModelPhotoBooth>
 
 		busy = false;
 	}
-
-	#region Refactored
 
 	// Extracted method
 	GameObject CreateCopyOfGameObject(GameObject copyFrom)
